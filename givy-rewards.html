@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GivyRewards</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+font-family: -apple-system, BlinkMacSystemFont, ‘Segoe UI’, Roboto, Arial, sans-serif;
+background: #1a1a2e;
+min-height: 100vh;
+-webkit-font-smoothing: antialiased;
+}
+
+/* ─── HEADER ─── */
+header {
+background: linear-gradient(135deg, #059669, #047857);
+text-align: center;
+padding: 20px 16px 16px;
+}
+.brand-givy    { font-size: clamp(28px, 6vw, 48px); font-weight: 900; color: #fff; line-height: 1; }
+.brand-rewards { font-size: clamp(24px, 5vw, 42px); font-weight: 900; color: #FFD700; letter-spacing: 4px; line-height: 1; }
+.tagline       { display: inline-block; margin-top: 6px; background: rgba(0,0,0,.22); color: #fff; font-size: clamp(11px, 2vw, 14px); font-weight: 700; padding: 3px 14px; border-radius: 99px; }
+
+/* ─── PAGE WRAPPER ─── */
+.page { display: none; max-width: 720px; margin: 0 auto; padding: 20px 16px 40px; }
+.page.active { display: block; }
+
+/* ─── CARD ─── */
+.card {
+background: #fff;
+border-radius: 18px;
+padding: clamp(14px, 3vw, 22px);
+margin-bottom: 14px;
+box-shadow: 0 4px 24px rgba(0,0,0,.35);
+}
+
+/* ─── TYPOGRAPHY ─── */
+.page-title { font-size: clamp(20px, 4vw, 28px); font-weight: 900; color: #fff; margin-bottom: 4px; }
+.page-sub   { font-size: clamp(13px, 2vw, 15px); color: #94a3b8; font-weight: 600; margin-bottom: 16px; line-height: 1.5; }
+.card-title { font-size: clamp(14px, 2.5vw, 17px); font-weight: 900; color: #111; margin-bottom: 4px; }
+.card-body  { font-size: clamp(13px, 2vw, 15px); color: #4b5563; font-weight: 600; line-height: 1.45; }
+.sec-label  { font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1.5px; margin: 14px 0 8px; }
+
+/* ─── BUTTONS ─── */
+.btn {
+display: block; width: 100%;
+border: none; border-radius: 16px;
+padding: clamp(13px, 2.5vw, 17px);
+font-size: clamp(14px, 2.5vw, 17px); font-weight: 900; color: #fff;
+cursor: pointer; margin-bottom: 12px;
+transition: opacity .15s, transform .1s;
+-webkit-appearance: none;
+}
+.btn:active { opacity: .82; transform: scale(.98); }
+.btn-green  { background: #059669; box-shadow: 0 5px 18px rgba(5,150,105,.4); }
+.btn-blue   { background: #1d4ed8; box-shadow: 0 5px 18px rgba(29,78,216,.4); }
+.btn-back   { display: inline-block; width: auto; background: rgba(255,255,255,.15); border: none; color: #fff; border-radius: 12px; padding: 8px 16px; font-weight: 800; font-size: 15px; cursor: pointer; margin-bottom: 14px; }
+
+/* ─── INPUTS ─── */
+.inp {
+display: block; width: 100%;
+background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px;
+padding: clamp(11px, 2vw, 14px) 14px;
+font-size: clamp(14px, 2.5vw, 16px); font-family: inherit; font-weight: 600; color: #111;
+margin-bottom: 10px;
+-webkit-appearance: none; appearance: none;
+transition: border-color .15s;
+}
+.inp:focus { outline: none; border-color: #059669; background: #fff; }
+.inp::placeholder { color: #9ca3af; }
+.inp.err { border-color: #ef4444 !important; }
+
+/* ─── REWARDS SCALE ─── */
+.scale-bar-wrap { height: 20px; border-radius: 99px; overflow: hidden; background: #e5e7eb; margin-bottom: 12px; }
+.scale-bar      { height: 100%; border-radius: 99px; background: linear-gradient(90deg,#fbbf24,#8b5cf6,#10b981); width: 100%; }
+.scale-labels   { display: grid; grid-template-columns: repeat(3,1fr); gap: 4px; text-align: center; }
+.scale-label    { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.sl-icon  { font-size: clamp(18px, 4vw, 26px); }
+.sl-name  { font-size: clamp(11px, 2vw, 14px); font-weight: 900; }
+.sl-pct   { font-size: clamp(12px, 2vw, 15px); font-weight: 900; color: #fff; padding: 2px 10px; border-radius: 99px; }
+.sl-count { font-size: 11px; color: #6b7280; font-weight: 700; }
+.gold-pct    { background: #d97706; }
+.diamond-pct { background: #7c3aed; }
+.champ-pct   { background: #059669; }
+
+/* ─── FEATURE GRID ─── */
+.feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 12px; }
+.feature-grid .card { margin-bottom: 0; }
+.feat-icon { font-size: clamp(26px, 5vw, 36px); margin-bottom: 6px; }
+
+/* ─── TWO-COL TIME ─── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.two-col .inp { margin-bottom: 0; }
+
+/* ─── PHOTO GRID ─── */
+.photo-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin-top: 10px; }
+.photo-grid img { width: 100%; height: clamp(60px,14vw,90px); object-fit: cover; border-radius: 10px; }
+
+/* ─── LIST ITEM ─── */
+.list-meta { font-size: 12px; color: #6b7280; font-weight: 700; margin-bottom: 2px; }
+
+/* ─── LEVEL BADGE ─── */
+.level-badge { display: flex; align-items: center; gap: 14px; }
+.level-emoji { font-size: clamp(36px, 7vw, 52px); }
+
+/* ─── EMPTY STATE ─── */
+.empty { text-align: center; padding: 36px 18px; }
+.empty-icon { font-size: 48px; margin-bottom: 10px; }
+.empty-title { font-size: 18px; font-weight: 900; color: #111; }
+.empty-sub   { font-size: 13px; color: #6b7280; font-weight: 600; margin-top: 4px; }
+
+/* ─── NAV ROW ─── */
+.nav-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.nav-title { font-size: clamp(17px, 3.5vw, 24px); font-weight: 900; color: #fff; }
+</style>
+
+</head>
+<body>
+
+<header>
+  <div class="brand-givy">Givy</div>
+  <div class="brand-rewards">REWARDS</div>
+  <div class="tagline">✨ Get rewarded for giving ✨</div>
+</header>
+
+<!-- HOME -->
+
+<div id="pg-home" class="page active">
+  <div style="height:16px"></div>
+  <div class="page-title">Give away your stuff</div>
+  <div class="page-sub">Furniture, household items, office equipment — free pickup, real rewards.</div>
+
+  <div class="card">
+    <div class="card-title">🔥 Rewards System</div>
+    <div class="card-body" style="margin-bottom:12px;">The more you give — the more you save</div>
+    <div class="scale-bar-wrap"><div class="scale-bar"></div></div>
+    <div class="scale-labels">
+      <div class="scale-label">
+        <span class="sl-icon">🥇</span>
+        <span class="sl-name" style="color:#d97706">Gold</span>
+        <span class="sl-pct gold-pct">20%</span>
+        <span class="sl-count">1–3 items</span>
+      </div>
+      <div class="scale-label">
+        <span class="sl-icon">💎</span>
+        <span class="sl-name" style="color:#7c3aed">Diamond</span>
+        <span class="sl-pct diamond-pct">30%</span>
+        <span class="sl-count">4–6 items</span>
+      </div>
+      <div class="scale-label">
+        <span class="sl-icon">🏆</span>
+        <span class="sl-name" style="color:#059669">Champion</span>
+        <span class="sl-pct champ-pct">50%</span>
+        <span class="sl-count">7+ items</span>
+      </div>
+    </div>
+  </div>
+
+<button class="btn btn-green" onclick="go('pg-post')">📦 Post an Item</button>
+<button class="btn btn-blue"  onclick="go('pg-list')">📋 My Requests</button>
+
+  <div class="feature-grid">
+    <div class="card">
+      <div class="feat-icon">🚚</div>
+      <div class="card-title">Free Pickup</div>
+      <div class="card-body">We collect at your chosen time</div>
+    </div>
+    <div class="card">
+      <div class="feat-icon">📸</div>
+      <div class="card-title">Upload Photos</div>
+      <div class="card-body">Add multiple photos of your item</div>
+    </div>
+    <div class="card">
+      <div class="feat-icon">🏆</div>
+      <div class="card-title">Reward Levels</div>
+      <div class="card-body">More giving = bigger discounts</div>
+    </div>
+  </div>
+</div>
+
+<!-- POST -->
+
+<div id="pg-post" class="page">
+  <div class="nav-row">
+    <button class="btn-back" onclick="go('pg-home')">← Back</button>
+    <span class="nav-title">Post an Item</span>
+  </div>
+
+  <div class="card">
+    <div class="sec-label">Item Details</div>
+    <input id="f-title"   class="inp" placeholder="Item title" autocomplete="off">
+    <textarea id="f-desc" class="inp" rows="3" placeholder="Description (condition, size, etc.)" style="resize:vertical"></textarea>
+
+```
+<div class="sec-label">Pickup Address</div>
+<input id="f-addr" class="inp" placeholder="Street address" autocomplete="street-address">
+
+<div class="sec-label">Pickup Date &amp; Time Window</div>
+<input id="f-date" class="inp" type="date">
+<div class="two-col">
+  <input id="f-t1" class="inp" type="time">
+  <input id="f-t2" class="inp" type="time">
+</div>
+
+<div class="sec-label" style="margin-top:14px">Contact — at least one required</div>
+<input id="f-email" class="inp" type="email" placeholder="Email address" inputmode="email" autocomplete="email">
+<input id="f-phone" class="inp" type="tel"   placeholder="Phone number"  inputmode="tel"   autocomplete="tel">
+
+<div class="sec-label">Photos (optional)</div>
+<input id="f-photo" type="file" multiple accept="image/*" style="color:#374151;font-size:14px;font-weight:600;width:100%;margin-bottom:14px;">
+
+<button class="btn btn-green" style="margin-bottom:0" onclick="submitPost()">✅ Submit Request</button>
+```
+
+  </div>
+</div>
+
+<!-- LIST -->
+
+<div id="pg-list" class="page">
+  <div class="nav-row">
+    <button class="btn-back" onclick="go('pg-home')">← Back</button>
+    <span class="nav-title">My Requests</span>
+  </div>
+  <div id="items-container"></div>
+</div>
+
+<script>
+  var items = [];
+
+  function go(id) {
+    document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0,0);
+    if (id === 'pg-list') renderList();
+  }
+
+  function getLevel(n) {
+    if (n >= 7) return { name:'Champion', disc:'50%', emoji:'🏆', color:'#059669' };
+    if (n >= 4) return { name:'Diamond',  disc:'30%', emoji:'💎', color:'#7c3aed' };
+    if (n >= 1) return { name:'Gold',     disc:'20%', emoji:'🥇', color:'#d97706' };
+    return       { name:'New',      disc:'0%',  emoji:'⭐', color:'#6b7280' };
+  }
+
+  function markErr(id) { document.getElementById(id).classList.add('err'); }
+  function clearErr()  { document.querySelectorAll('.inp').forEach(function(i){ i.classList.remove('err'); }); }
+
+  function val(id) { return document.getElementById(id).value.trim(); }
+
+  function submitPost() {
+    clearErr();
+    var ok = true;
+    ['f-title','f-desc','f-addr','f-date'].forEach(function(id){ if(!val(id)){ markErr(id); ok=false; } });
+    if (!val('f-t1') || !val('f-t2')) { markErr('f-t1'); markErr('f-t2'); ok=false; }
+    if (!val('f-email') && !val('f-phone')) { markErr('f-email'); markErr('f-phone'); alert('Please enter an email or phone number.'); return; }
+    if (val('f-email') && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val('f-email'))) { markErr('f-email'); alert('Please enter a valid email.'); return; }
+    if (!ok) { alert('Please fill in all required fields.'); return; }
+
+    var photos = [];
+    var files = document.getElementById('f-photo').files;
+    for (var i=0; i<files.length; i++) photos.push(URL.createObjectURL(files[i]));
+
+    items.unshift({
+      id: Date.now(),
+      title:   val('f-title'),
+      desc:    val('f-desc'),
+      address: val('f-addr'),
+      date:    val('f-date'),
+      time:    val('f-t1') + ' – ' + val('f-t2'),
+      email:   val('f-email'),
+      phone:   val('f-phone'),
+      photos:  photos
+    });
+
+    ['f-title','f-desc','f-addr','f-date','f-t1','f-t2','f-email','f-phone'].forEach(function(id){ document.getElementById(id).value=''; });
+    document.getElementById('f-photo').value = '';
+
+    alert('Request submitted! 🎉');
+    go('pg-list');
+  }
+
+  function renderList() {
+    var box = document.getElementById('items-container');
+    box.innerHTML = '';
+    var lv = getLevel(items.length);
+
+    box.innerHTML += '<div class="card level-badge">' +
+      '<span class="level-emoji">' + lv.emoji + '</span>' +
+      '<div>' +
+        '<div style="font-size:11px;color:#6b7280;font-weight:800;text-transform:uppercase;letter-spacing:1px">Your Level</div>' +
+        '<div style="font-size:clamp(18px,4vw,26px);font-weight:900;color:' + lv.color + '">' + lv.name + '</div>' +
+        '<div style="font-size:14px;font-weight:700;color:#374151">Discount: <span style="color:' + lv.color + ';font-size:18px">' + lv.disc + '</span></div>' +
+        '<div style="font-size:12px;color:#9ca3af;font-weight:600;margin-top:2px">' + items.length + ' item' + (items.length===1?'':'s') + ' given</div>' +
+      '</div></div>';
+
+    if (items.length === 0) {
+      box.innerHTML += '<div class="card empty"><div class="empty-icon">📭</div><div class="empty-title">No requests yet</div><div class="empty-sub">Post your first item to get started</div></div>';
+      return;
+    }
+
+    items.forEach(function(it) {
+      var photos = it.photos.map(function(p){ return '<img src="'+p+'" alt="">'; }).join('');
+      box.innerHTML += '<div class="card">' +
+        '<div style="font-size:clamp(14px,2.5vw,17px);font-weight:900;margin-bottom:6px">' + it.title + '</div>' +
+        '<div style="font-size:13px;color:#4b5563;font-weight:600;margin-bottom:8px;line-height:1.4">' + it.desc + '</div>' +
+        '<div class="list-meta">📍 ' + it.address + '</div>' +
+        '<div class="list-meta">📅 ' + it.date + ' &nbsp;⏰ ' + it.time + '</div>' +
+        (it.email ? '<div class="list-meta">📧 ' + it.email + '</div>' : '') +
+        (it.phone ? '<div class="list-meta">📱 ' + it.phone + '</div>' : '') +
+        (photos   ? '<div class="photo-grid">' + photos + '</div>' : '') +
+        '</div>';
+    });
+  }
+</script>
+
+</body>
+</html>
