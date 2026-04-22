@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<!-- ВАЖНО ДЛЯ МОБИЛЬНЫХ -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>GiveRewards</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #fafafa;
+    margin: 0;
+}
+
+/* HEADER */
+header {
+    background: #111;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    font-size: 22px;
+}
+
+/* КОНТЕЙНЕР */
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    padding: 15px;
+}
+
+/* КАРТОЧКА */
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+/* КАРТИНКА */
+.card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* ТЕКСТ */
+.card h3 {
+    font-size: 16px;
+    margin: 8px 0;
+}
+
+.card p {
+    font-size: 14px;
+    color: #555;
+}
+
+/* ЦЕНА */
+.price {
+    color: green;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+/* КНОПКА */
+button {
+    margin-top: 10px;
+    padding: 12px;
+    width: 100%;
+    border: none;
+    background: #4CAF50;
+    color: white;
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+/* 📱 МЕЛКИЕ ТЕЛЕФОНЫ */
+@media (max-width: 480px) {
+    header {
+        font-size: 18px;
+        padding: 12px;
+    }
+
+    .card img {
+        height: 140px;
+    }
+
+    button {
+        padding: 14px;
+        font-size: 15px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>GiveRewards</header>
+
+<div class="container" id="store"></div>
+
+<script>
+function getProducts() {
+    return JSON.parse(localStorage.getItem('products')) || [];
+}
+
+function renderStore() {
+    const products = getProducts();
+    const container = document.getElementById('store');
+    container.innerHTML = '';
+
+    products.forEach(p => {
+        container.innerHTML += `
+            <div class="card">
+                <img src="${p.image || 'https://via.placeholder.com/250'}">
+                <h3>${p.title}</h3>
+                <p>${p.desc}</p>
+                <div class="price">$${p.price}</div>
+                <button onclick="buy('${p.title}')">Buy</button>
+            </div>
+        `;
+    });
+}
+
+function buy(title) {
+    alert("Redirecting to Marketplace: " + title);
+}
+
+renderStore();
+</script>
+
+</body>
+</html>
