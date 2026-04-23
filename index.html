@@ -1,138 +1,745 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
-<meta charset="UTF-8">
-
-<!-- ВАЖНО ДЛЯ МОБИЛЬНЫХ -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>GiveRewards</title>
-
-<style>
-body {
-    font-family: Arial;
-    background: #fafafa;
-    margin: 0;
-}
-
-/* HEADER */
-header {
-    background: #111;
-    color: white;
-    padding: 15px;
-    text-align: center;
-    font-size: 22px;
-}
-
-/* КОНТЕЙНЕР */
-.container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 15px;
-    padding: 15px;
-}
-
-/* КАРТОЧКА */
-.card {
-    background: white;
-    border-radius: 12px;
-    padding: 12px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-}
-
-/* КАРТИНКА */
-.card img {
-    width: 100%;
-    height: 160px;
-    object-fit: cover;
-    border-radius: 8px;
-}
-
-/* ТЕКСТ */
-.card h3 {
-    font-size: 16px;
-    margin: 8px 0;
-}
-
-.card p {
-    font-size: 14px;
-    color: #555;
-}
-
-/* ЦЕНА */
-.price {
-    color: green;
-    font-weight: bold;
-    margin-top: 5px;
-}
-
-/* КНОПКА */
-button {
-    margin-top: 10px;
-    padding: 12px;
-    width: 100%;
-    border: none;
-    background: #4CAF50;
-    color: white;
-    cursor: pointer;
-    border-radius: 8px;
-    font-size: 16px;
-}
-
-/* 📱 МЕЛКИЕ ТЕЛЕФОНЫ */
-@media (max-width: 480px) {
-    header {
-        font-size: 18px;
-        padding: 12px;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>LUXURY BOUTIQUE | Вітрина магазину</title>
+  <!-- Google Fonts: чисті, дорогі шрифти -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 (безкоштовна іконка для кошика, сердечка) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    .card img {
-        height: 140px;
+    body {
+      background-color: #0A0A0A;  /* глибокий чорний фон — елегантність */
+      font-family: 'Inter', sans-serif;
+      color: #E9E9E9;
+      line-height: 1.4;
     }
 
-    button {
-        padding: 14px;
-        font-size: 15px;
+    /* контейнер із стриманою шириною, що нагадує premium-галерею */
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 32px;
     }
-}
-</style>
+
+    /* header – мінімалізм, дорогі акценти */
+    .shop-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      padding: 36px 0 24px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 48px;
+    }
+
+    .logo h1 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 500;
+      font-size: 28px;
+      letter-spacing: -0.3px;
+      background: linear-gradient(135deg, #FFFFFF 30%, #C0A06B 80%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .logo p {
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #C0A06B;
+      margin-top: 6px;
+      font-weight: 400;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 28px;
+    }
+
+    .header-actions i {
+      font-size: 22px;
+      color: #E9E9E9;
+      transition: color 0.2s ease;
+      cursor: pointer;
+    }
+
+    .header-actions i:hover {
+      color: #C0A06B;
+    }
+
+    /* фільтри – вишукана сітка */
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 48px;
+      justify-content: center;
+    }
+
+    .filter-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 8px 24px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      letter-spacing: 0.3px;
+      color: #E9E9E9;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+      background: #C0A06B;
+      border-color: #C0A06B;
+      color: #0A0A0A;
+    }
+
+    /* сітка товарів – мінімалістична, але з дорогими відступами */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 40px 24px;
+      margin-bottom: 80px;
+    }
+
+    /* картка товару – преміум відчуття */
+    .product-card {
+      background: #121212;
+      border-radius: 28px;
+      overflow: hidden;
+      transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1), box-shadow 0.3s;
+      box-shadow: 0 12px 24px -12px rgba(0,0,0,0.6);
+      cursor: pointer;
+    }
+
+    .product-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 36px -12px rgba(0,0,0,0.8);
+    }
+
+    .product-img {
+      position: relative;
+      overflow: hidden;
+      background: #1E1E1E;
+      aspect-ratio: 4 / 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .product-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    .product-card:hover .product-img img {
+      transform: scale(1.03);
+    }
+
+    .wishlist-icon {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      background: rgba(10,10,10,0.6);
+      backdrop-filter: blur(4px);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 18px;
+      transition: 0.2s;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .wishlist-icon:hover {
+      color: #C0A06B;
+      background: rgba(0,0,0,0.8);
+    }
+
+    .product-info {
+      padding: 20px 20px 24px;
+    }
+
+    .brand {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 500;
+      color: #C0A06B;
+      margin-bottom: 8px;
+    }
+
+    .product-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    .price {
+      font-weight: 600;
+      font-size: 22px;
+      letter-spacing: -0.3px;
+    }
+
+    .old-price {
+      font-size: 15px;
+      color: #9B9B9B;
+      text-decoration: line-through;
+      margin-left: 12px;
+    }
+
+    .add-to-cart {
+      background: rgba(192, 160, 107, 0.12);
+      border: 1px solid rgba(192, 160, 107, 0.4);
+      border-radius: 40px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #C0A06B;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .add-to-cart i {
+      font-size: 14px;
+    }
+
+    .add-to-cart:hover {
+      background: #C0A06B;
+      color: #0A0A0A;
+      border-color: #C0A06B;
+    }
+
+    /* кошик (сайдбар) */
+    .cart-sidebar {
+      position: fixed;
+      top: 0;
+      right: -480px;
+      width: 100%;
+      max-width: 460px;
+      height: 100vh;
+      background: #0F0F0F;
+      backdrop-filter: blur(0px);
+      box-shadow: -8px 0 30px rgba(0,0,0,0.8);
+      z-index: 1000;
+      transition: right 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid rgba(192, 160, 107, 0.3);
+    }
+
+    .cart-sidebar.open {
+      right: 0;
+    }
+
+    .cart-header {
+      padding: 28px 28px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cart-header h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 500;
+    }
+
+    .close-cart {
+      font-size: 28px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .close-cart:hover { color: #C0A06B; }
+
+    .cart-items {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .cart-item {
+      display: flex;
+      gap: 16px;
+      background: #171717;
+      border-radius: 20px;
+      padding: 12px;
+    }
+    .cart-item-img {
+      width: 70px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 14px;
+      background: #2A2A2A;
+    }
+    .cart-item-details {
+      flex: 1;
+    }
+    .cart-item-title {
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .cart-item-price {
+      color: #C0A06B;
+      font-weight: 500;
+    }
+    .cart-item-qty {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .qty-btn {
+      background: #2C2C2C;
+      border: none;
+      width: 26px;
+      height: 26px;
+      border-radius: 30px;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .remove-item {
+      color: #aa6f6f;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 8px;
+      display: inline-block;
+    }
+
+    .cart-total {
+      padding: 24px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      background: #0F0F0F;
+    }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+    .checkout-btn {
+      width: 100%;
+      background: #C0A06B;
+      border: none;
+      padding: 16px;
+      font-weight: 700;
+      font-size: 18px;
+      color: #0A0A0A;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .checkout-btn:hover {
+      opacity: 0.9;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(3px);
+      z-index: 999;
+      visibility: hidden;
+      opacity: 0;
+      transition: 0.2s;
+    }
+    .overlay.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* сповіщення */
+    .toast-msg {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      background: #C0A06B;
+      color: #0A0A0A;
+      padding: 12px 24px;
+      border-radius: 40px;
+      font-weight: 600;
+      z-index: 1200;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: 0.25s;
+      pointer-events: none;
+    }
+    .toast-msg.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* адаптивність */
+    @media (max-width: 700px) {
+      .container { padding: 0 20px; }
+      .product-grid { gap: 24px; }
+      .cart-sidebar { max-width: 100%; }
+    }
+    footer {
+      text-align: center;
+      padding: 40px 0 32px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      font-size: 13px;
+      color: #6F6F6F;
+    }
+    button { background: none; border: none; }
+  </style>
 </head>
-
 <body>
 
-<header>GiveRewards</header>
+<div class="container">
+  <header class="shop-header">
+    <div class="logo">
+      <h1>VERA NOIR</h1>
+      <p>Atelier · Contemporary Luxury</p>
+    </div>
+    <div class="header-actions">
+      <i class="far fa-heart" id="favoriteIcon"></i>
+      <i class="fas fa-shopping-bag" id="cartIcon"></i>
+    </div>
+  </header>
 
-<div class="container" id="store"></div>
+  <!-- Фільтри категорій (оновлюють вітрину) -->
+  <div class="filters" id="filterGroup">
+    <button class="filter-btn active" data-category="all">Усі речі</button>
+    <button class="filter-btn" data-category="clothing">Одяг</button>
+    <button class="filter-btn" data-category="accessories">Аксесуари</button>
+    <button class="filter-btn" data-category="shoes">Взуття</button>
+  </div>
+
+  <!-- Сітка товарів -->
+  <div class="product-grid" id="productGrid"></div>
+</div>
+
+<!-- Кошик сайдбар -->
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <h3>Кошик</h3>
+    <i class="fas fa-times close-cart" id="closeCartBtn"></i>
+  </div>
+  <div class="cart-items" id="cartItemsList">
+    <!-- динамічно -->
+    <div style="text-align:center; padding:40px;">Ваш кошик порожній</div>
+  </div>
+  <div class="cart-total">
+    <div class="total-row">
+      <span>Всього</span>
+      <span id="cartTotalAmount">0 ₴</span>
+    </div>
+    <button class="checkout-btn" id="checkoutBtn">Оформити замовлення</button>
+    <p style="font-size:12px; margin-top:12px; text-align:center;">Доставка по всій Україні</p>
+  </div>
+</div>
+<div class="overlay" id="overlay"></div>
+<div id="toastMsg" class="toast-msg">✨ Додано до кошика</div>
 
 <script>
-function getProducts() {
-    return JSON.parse(localStorage.getItem('products')) || [];
-}
+  // ---------- РОЗШИРЕНА КОЛЕКЦІЯ PREMIUM ТОВАРІВ (Facebook Marketplace ready) ----------
+  const products = [
+    { id: 1, name: "Шовкова сукня Cassiopeia", brand: "VERA NOIR", price: 18900, oldPrice: 23900, category: "clothing", image: "https://picsum.photos/id/20/400/500", desc: "Лімітована колекція" },
+    { id: 2, name: "Блейзер з кашеміру", brand: "MAISON BLANC", price: 15400, oldPrice: 18900, category: "clothing", image: "https://picsum.photos/id/30/400/500" },
+    { id: 3, name: "Сумка Minaudière", brand: "NOIR ATELIER", price: 27900, oldPrice: null, category: "accessories", image: "https://picsum.photos/id/26/400/500" },
+    { id: 4, name: "Лофери з крокодиля", brand: "SARTORIA", price: 21200, oldPrice: 24900, category: "shoes", image: "https://picsum.photos/id/28/400/500" },
+    { id: 5, name: "Клатч Perla", brand: "LUNAIRE", price: 8900, oldPrice: 12900, category: "accessories", image: "https://picsum.photos/id/43/400/500" },
+    { id: 6, name: "Шовкова блуза", brand: "VERA NOIR", price: 11200, oldPrice: 13800, category: "clothing", image: "https://picsum.photos/id/33/400/500" },
+    { id: 7, name: "Черевики Chelsea", brand: "GOLDEN LEATHER", price: 16900, oldPrice: null, category: "shoes", image: "https://picsum.photos/id/41/400/500" },
+    { id: 8, name: "Сонцезахисні окуляри", brand: "ÉTOILE", price: 6450, oldPrice: 8900, category: "accessories", image: "https://picsum.photos/id/96/400/500" },
+    { id: 9, name: "Пальто вовняне", brand: "CORTE", price: 28900, oldPrice: 34900, category: "clothing", image: "https://picsum.photos/id/29/400/500" },
+    { id: 10, name: "Кросівки мінімалізм", brand: "VELOUR", price: 13500, oldPrice: 16900, category: "shoes", image: "https://picsum.photos/id/0/400/500" },
+    { id: 11, name: "Шкіряний ремінь", brand: "NOIR ATELIER", price: 4750, oldPrice: null, category: "accessories", image: "https://picsum.photos/id/77/400/500" },
+    { id: 12, name: "Спідниця-олівець", brand: "MAISON BLANC", price: 9900, oldPrice: 12400, category: "clothing", image: "https://picsum.photos/id/63/400/500" }
+  ];
 
-function renderStore() {
-    const products = getProducts();
-    const container = document.getElementById('store');
-    container.innerHTML = '';
+  // Стан кошика (id товару => кількість)
+  let cart = new Map(); // key: productId, value: quantity
+  let activeFilter = "all";
 
-    products.forEach(p => {
-        container.innerHTML += `
-            <div class="card">
-                <img src="${p.image || 'https://via.placeholder.com/250'}">
-                <h3>${p.title}</h3>
-                <p>${p.desc}</p>
-                <div class="price">$${p.price}</div>
-                <button onclick="buy('${p.title}')">Buy</button>
+  // Функція для відмальовування сітки товарів за фільтром
+  function renderProducts() {
+    const grid = document.getElementById("productGrid");
+    const filtered = activeFilter === "all" ? products : products.filter(p => p.category === activeFilter);
+    if (filtered.length === 0) {
+      grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:60px;">Немає товарів у цій категорії</div>`;
+      return;
+    }
+    grid.innerHTML = filtered.map(product => {
+      const cartQty = cart.get(product.id) || 0;
+      return `
+        <div class="product-card" data-id="${product.id}">
+          <div class="product-img">
+            <img src="${product.image}" alt="${product.name}" loading="lazy">
+            <div class="wishlist-icon" data-wish="${product.id}">
+              <i class="far fa-heart"></i>
             </div>
-        `;
+          </div>
+          <div class="product-info">
+            <div class="brand">${product.brand}</div>
+            <div class="product-title">${product.name}</div>
+            <div class="price-row">
+              <div>
+                <span class="price">${formatPrice(product.price)}</span>
+                ${product.oldPrice ? `<span class="old-price">${formatPrice(product.oldPrice)}</span>` : ''}
+              </div>
+              <div class="add-to-cart" data-id="${product.id}">
+                <i class="fas fa-shopping-bag"></i> <span>Купити</span>
+              </div>
+            </div>
+            ${cartQty > 0 ? `<div style="font-size:12px; margin-top:10px; color:#C0A06B;">✓ у кошику (${cartQty})</div>` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Додаємо обробники для всіх кнопок "Купити" після рендеру
+    document.querySelectorAll('.add-to-cart').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = parseInt(btn.getAttribute('data-id'));
+        addToCart(id);
+        showToast("Додано до кошика");
+      });
     });
-}
 
-function buy(title) {
-    alert("Redirecting to Marketplace: " + title);
-}
+    // Обробники для іконок бажань (wishlist демо)
+    document.querySelectorAll('.wishlist-icon').forEach(icon => {
+      icon.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showToast("❤️ Додано до обраного (симуляція)");
+        icon.querySelector('i').classList.toggle('fas');
+        icon.querySelector('i').classList.toggle('far');
+      });
+    });
 
-renderStore();
+    // Клік по картці для деталей (інтеграція з Facebook Marketplace логікою)
+    document.querySelectorAll('.product-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        // щоб не спрацювало при кліку по внутрішніх кнопках
+        if(e.target.closest('.add-to-cart') || e.target.closest('.wishlist-icon')) return;
+        const prodId = parseInt(card.getAttribute('data-id'));
+        const product = products.find(p => p.id === prodId);
+        if(product) {
+          showToast(`🔍 ${product.name} — докладніше у Marketplace (ID:${product.id})`);
+          // тут можна інтегрувати виклик до Facebook Cregg лист Ofer App через спеціальний URI
+          // Наприклад, для прикладу імітуємо перехід на deep-link: window.location.href = `fbmarketplace://product?id=${prodId}`;
+          console.log(`Facebook Marketplace integration: open product ${prodId}`);
+        }
+      });
+    });
+  }
+
+  // Функції кошика
+  function addToCart(productId, quantity = 1) {
+    const existing = cart.get(productId) || 0;
+    cart.set(productId, existing + quantity);
+    updateCartUI();
+    renderProducts(); // оновлюємо позначку "у кошику"
+  }
+
+  function removeFromCart(productId) {
+    cart.delete(productId);
+    updateCartUI();
+    renderProducts();
+  }
+
+  function updateQuantity(productId, delta) {
+    const current = cart.get(productId) || 0;
+    const newQty = current + delta;
+    if (newQty <= 0) {
+      cart.delete(productId);
+    } else {
+      cart.set(productId, newQty);
+    }
+    updateCartUI();
+    renderProducts();
+  }
+
+  function updateCartUI() {
+    const cartContainer = document.getElementById("cartItemsList");
+    const totalSpan = document.getElementById("cartTotalAmount");
+    let totalPrice = 0;
+    let cartItemsHtml = "";
+
+    if (cart.size === 0) {
+      cartContainer.innerHTML = `<div style="text-align:center; padding:40px;">Ваш кошик порожній<br>✨ оберіть вишукані речі</div>`;
+      totalSpan.innerText = `0 ₴`;
+      return;
+    }
+
+    for (let [id, qty] of cart.entries()) {
+      const product = products.find(p => p.id === id);
+      if (!product) continue;
+      const itemTotal = product.price * qty;
+      totalPrice += itemTotal;
+      cartItemsHtml += `
+        <div class="cart-item" data-id="${id}">
+          <img class="cart-item-img" src="${product.image}" alt="${product.name}">
+          <div class="cart-item-details">
+            <div class="cart-item-title">${product.name}</div>
+            <div class="cart-item-price">${formatPrice(product.price)}</div>
+            <div class="cart-item-qty">
+              <button class="qty-btn" data-id="${id}" data-delta="-1">−</button>
+              <span>${qty}</span>
+              <button class="qty-btn" data-id="${id}" data-delta="1">+</button>
+            </div>
+            <div class="remove-item" data-id="${id}">Видалити</div>
+          </div>
+        </div>
+      `;
+    }
+
+    cartContainer.innerHTML = cartItemsHtml;
+    totalSpan.innerText = formatPrice(totalPrice);
+
+    // обробники для +/- та видалення
+    document.querySelectorAll('.qty-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const pid = parseInt(btn.getAttribute('data-id'));
+        const delta = parseInt(btn.getAttribute('data-delta'));
+        updateQuantity(pid, delta);
+      });
+    });
+    document.querySelectorAll('.remove-item').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const pid = parseInt(btn.getAttribute('data-id'));
+        removeFromCart(pid);
+        showToast("Товар видалено");
+      });
+    });
+  }
+
+  function formatPrice(price) {
+    return price.toLocaleString('uk-UA') + ' ₴';
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById("toastMsg");
+    toast.innerText = msg;
+    toast.classList.add("show");
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 2000);
+  }
+
+  // Фільтри
+  function initFilters() {
+    const btns = document.querySelectorAll(".filter-btn");
+    btns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        btns.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        activeFilter = btn.getAttribute("data-category");
+        renderProducts();
+      });
+    });
+  }
+
+  // Кошик сайдбар управління
+  function initCartSidebar() {
+    const cartIcon = document.getElementById("cartIcon");
+    const cartSidebar = document.getElementById("cartSidebar");
+    const closeCart = document.getElementById("closeCartBtn");
+    const overlay = document.getElementById("overlay");
+
+    function openCart() {
+      cartSidebar.classList.add("open");
+      overlay.classList.add("active");
+    }
+    function closeCartFunc() {
+      cartSidebar.classList.remove("open");
+      overlay.classList.remove("active");
+    }
+
+    cartIcon.addEventListener("click", openCart);
+    closeCart.addEventListener("click", closeCartFunc);
+    overlay.addEventListener("click", closeCartFunc);
+  }
+
+  // Оформлення замовлення (інтеграція з Facebook Cregg лист Ofer App)
+  function initCheckout() {
+    const checkoutBtn = document.getElementById("checkoutBtn");
+    checkoutBtn.addEventListener("click", () => {
+      if (cart.size === 0) {
+        showToast("Кошик порожній, додайте товари");
+        return;
+      }
+      const orderItems = [];
+      for (let [id, qty] of cart.entries()) {
+        const prod = products.find(p => p.id === id);
+        if(prod) orderItems.push({ id: prod.id, name: prod.name, quantity: qty, price: prod.price });
+      }
+      // Інтеграція з Facebook Marketplace / Cregg лист Ofer App через консоль або диплінк
+      console.log("🔔 Замовлення для Facebook Cregg Ofer App:", orderItems);
+      // Емуляція передачі даних в Ofer App (можна замінити на реальний виклик API)
+      // Для Facebook Marketplace використовують стандартний pixel або conversion API, тут демо-сповіщення.
+      showToast(`✅ Замовлення оформлено! Сума: ${formatPrice(Array.from(cart.entries()).reduce((acc, [id,qty]) => acc + (products.find(p=>p.id===id)?.price || 0)*qty,0))}`);
+      // Очистка кошика (тестова симуляція після замовлення)
+      cart.clear();
+      updateCartUI();
+      renderProducts();
+      // Закрити кошик
+      document.getElementById("cartSidebar").classList.remove("open");
+      document.getElementById("overlay").classList.remove("active");
+      showToast("Дякуємо за покупку! Наш менеджер зв'яжеться.");
+    });
+  }
+
+  // Іконка "Обране" (демо)
+  document.getElementById("favoriteIcon")?.addEventListener("click", () => {
+    showToast("💎 Ваш список бажань — не пропустіть нові колекції");
+  });
+
+  // Запуск
+  function init() {
+    renderProducts();
+    initFilters();
+    initCartSidebar();
+    initCheckout();
+  }
+
+  init();
 </script>
-
+<footer>
+  <p>© VERA NOIR — PREMIUM BOUTIQUE | Інтеграція з Facebook Marketplace & Cregg лист Ofer App</p>
+</footer>
 </body>
 </html>
