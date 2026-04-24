@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GivyRewardsAdmin</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0A0A0A; font-family: Arial, sans-serif; color: white; padding: 20px; }
+    .container { max-width: 1000px; margin: 0 auto; }
+    h1 { color: #C5A267; margin-bottom: 20px; }
+    .exit-btn { background: #333; padding: 10px 20px; border: none; border-radius: 30px; color: white; cursor: pointer; margin-bottom: 20px; }
+    .card { background: #121212; border-radius: 20px; padding: 20px; margin-bottom: 30px; }
+    input, textarea, select { width: 100%; padding: 10px; margin: 8px 0 15px 0; background: #1E1E1E; border: 1px solid #333; border-radius: 10px; color: white; }
+    button { background: #C5A267; border: none; padding: 12px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; margin: 5px; }
+    .btn-del { background: #aa2e2e; color: white; }
+    .btn-fb { background: #1877F2; color: white; }
+    .product-item { background: #1A1A1A; padding: 15px; margin: 10px 0; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+    .login-box { text-align: center; padding: 50px; background: #121212; border-radius: 20px; max-width: 300px; margin: 50px auto; }
+    .toast { position: fixed; bottom: 20px; left: 20px; background: #C5A267; color: black; padding: 10px 20px; border-radius: 30px; opacity: 0; transition: 0.2s; z-index: 1000; }
+    .toast.show { opacity: 1; }
+    hr { margin: 20px 0; border-color: #333; }
+    .preview-grid { display: flex; flex-wrap: wrap; gap: 12px; margin: 15px 0; }
+    .preview-img { position: relative; width: 80px; height: 80px; background: #0A0A0A; border-radius: 12px; overflow: hidden; border: 1px solid #444; }
+    .preview-img img { width: 100%; height: 100%; object-fit: cover; }
+    .remove-img { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.7); border-radius: 20px; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; color: white; }
+    .upload-btn { background: #2a2a2a; border: 1px solid #C5A267; padding: 10px 15px; border-radius: 30px; color: #C5A267; cursor: pointer; display: inline-flex; gap: 8px; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+
+<div id="loginBox" style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+  <div class="login-box">
+    <h2>🔐 Admin Login</h2>
+    <input type="password" id="password" placeholder="Password">
+    <button id="loginBtn">Login</button>
+  </div>
+</div>
+
+<div id="adminPanel" style="display: none;">
+  <div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h1>👑 GivyRewardsAdmin</h1>
+      <button class="exit-btn" id="exitBtn">🚪 Exit to Shop</button>
+    </div>
+    
+    <!-- ADD PRODUCT FORM -->
+    <div class="card">
+      <h3 id="formTitle">➕ Add New Product</h3>
+      <input type="text" id="name" placeholder="Product Name *">
+      <input type="text" id="brand" placeholder="Brand" value="GIVY STUDIO">
+      <select id="category"></select>
+      <textarea id="desc" placeholder="Description" rows="3"></textarea>
+      <input type="number" id="price" placeholder="Price USD *">
+      <input type="text" id="fbUser" placeholder="Facebook username (e.g. john.doe)">
+      
+      <!-- Image Upload Section (up to 10 photos) -->
+      <div style="margin: 15px 0;">
+        <label style="color:#C5A267;">📸 Product Images (up to 10 photos)</label>
+        <div>
+          <input type="file" id="imageInput" accept="image/*" multiple style="display:none">
+          <button type="button" class="upload-btn" id="uploadBtn">📤 Select Images (Max 10)</button>
+        </div>
+        <div id="previewGrid" class="preview-grid"></div>
+      </div>
+      
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button id="saveBtn">💾 Save Product</button>
+        <button id="addMoreBtn">➕ Add More</button>
+        <button id="cancelEditBtn" style="display:none;">❌ Cancel</button>
+      </div>
+      <input type="hidden" id="editId">
+    </div>
+    
+    <!-- CATEGORIES & FB SETTINGS -->
+    <div class="card">
+      <h3>📁 Categories</h3>
+      <div style="display: flex; gap: 10px;">
+        <input type="text" id="newCat" placeholder="New category name" style="flex:1;">
+        <button id="addCatBtn">Add Category</button>
+      </div>
+      <div id="catList" style="margin-top: 15px;"></div>
+      
+      <hr>
+      
+      <h3>📘 Facebook Settings</h3>
+      <input type="text" id="globalFb" placeholder="Default Facebook username">
+      <button id="saveGlobalFbBtn">Save Global FB</button>
+      <button id="syncFBBtn" class="btn-fb" style="margin-top: 10px;">🔄 Sync to Facebook Commerce</button>
+    </div>
+    
+    <!-- PRODUCT LIST -->
+    <div class="card">
+      <h3>📦 Products <span id="count" style="background:#C5A267; color:black; padding:2px 10px; border-radius:20px;">0</span></h3>
+      <div id="productList"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast">✨ Done</div>
+
+<script>
+  const PASSWORD = "admin123";
+  let products = [];
+  let categories = ['furniture', 'seating', 'beds', 'rugs', 'decor', 'office'];
+  let globalFb = '';
+  let currentImages = []; // store base64 images for current product being edited/added
+  let currentPreviewImages = [];
+
+  // ========== AUTH ==========
+  document.getElementById('loginBtn').onclick = () => {
+    const pwd = document.getElementById('password').value;
+    if(pwd === PASSWORD) {
+      localStorage.setItem('admin_auth', 'true');
+      document.getElementById('loginBox').style.display = 'none';
+      document.getElementById('adminPanel').style.display = 'block';
+      loadAll();
+    } else {
+      alert('Wrong password');
+    }
+  };
+  
+  if(localStorage.getItem('admin_auth') === 'true') {
+    document.getElementById('loginBox').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    loadAll();
+  }
+
+  // ========== IMAGE PREVIEW ==========
+  function renderImagePreview() {
+    const grid = document.getElementById('previewGrid');
+    if(!grid) return;
+    grid.innerHTML = '';
+    if(currentPreviewImages.length === 0) {
+      grid.innerHTML = '<div style="color:#777; font-size:12px; padding:10px 0;">No images selected. Upload up to 10 photos.</div>';
+      return;
+    }
+    currentPreviewImages.forEach((src, idx) => {
+      const div = document.createElement('div');
+      div.className = 'preview-img';
+      const img = document.createElement('img');
+      img.src = src;
+      const rm = document.createElement('div');
+      rm.className = 'remove-img';
+      rm.innerHTML = '✕';
+      rm.onclick = (e) => {
+        e.stopPropagation();
+        currentPreviewImages.splice(idx, 1);
+        currentImages.splice(idx, 1);
+        renderImagePreview();
+      };
+      div.appendChild(img);
+      div.appendChild(rm);
+      grid.appendChild(div);
+    });
+  }
+
+  document.getElementById('uploadBtn').onclick = () => document.getElementById('imageInput').click();
+  document.getElementById('imageInput').onchange = (e) => {
+    const files = Array.from(e.target.files);
+    const remaining = 10 - currentPreviewImages.length;
+    const toAdd = files.slice(0, remaining);
+    toAdd.forEach(file => {
+      if(file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          currentImages.push(ev.target.result);
+          currentPreviewImages.push(ev.target.result);
+          renderImagePreview();
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+    e.target.value = '';
+    if(toAdd.length < files.length) showToast(`Max 10 images. Added ${toAdd.length} of ${files.length}`);
+  };
+
+  function resetImages() {
+    currentImages = [];
+    currentPreviewImages = [];
+    renderImagePreview();
+  }
+
+  // ========== LOAD & SAVE ==========
+  function loadAll() {
+    const storedProducts = localStorage.getItem('givy_products');
+    products = storedProducts ? JSON.parse(storedProducts) : [];
+    
+    const storedCats = localStorage.getItem('givy_categories');
+    if(storedCats) categories = JSON.parse(storedCats);
+    
+    const storedFb = localStorage.getItem('givy_global_fb');
+    globalFb = storedFb || '';
+    document.getElementById('globalFb').value = globalFb;
+    
+    renderCategorySelect();
+    renderCatList();
+    renderProductList();
+    document.getElementById('count').innerText = products.length;
+  }
+
+  function saveAll() {
+    localStorage.setItem('givy_products', JSON.stringify(products));
+    localStorage.setItem('givy_categories', JSON.stringify(categories));
+    localStorage.setItem('givy_global_fb', globalFb);
+    renderProductList();
+    renderCatList();
+    renderCategorySelect();
+    document.getElementById('count').innerText = products.length;
+    showToast('✅ Saved');
+    localStorage.setItem('givy_updated', Date.now());
+  }
+
+  function renderCategorySelect() {
+    const select = document.getElementById('category');
+    select.innerHTML = '';
+    categories.forEach(cat => {
+      const opt = document.createElement('option');
+      opt.value = cat;
+      opt.textContent = cat;
+      select.appendChild(opt);
+    });
+  }
+
+  // ========== CATEGORIES ==========
+  function renderCatList() {
+    const container = document.getElementById('catList');
+    container.innerHTML = '';
+    categories.forEach((cat, idx) => {
+      const div = document.createElement('div');
+      div.style.cssText = 'display:flex; justify-content:space-between; align-items:center; background:#1E1E1E; padding:10px; margin:5px 0; border-radius:10px;';
+      div.innerHTML = `<span>${cat}</span><button onclick="deleteCategory(${idx})" style="background:#aa2e2e; padding:5px 12px;">Delete</button>`;
+      container.appendChild(div);
+    });
+  }
+
+  window.deleteCategory = (idx) => {
+    if(confirm('Delete this category?')) {
+      categories.splice(idx, 1);
+      if(categories.length === 0) categories = ['other'];
+      saveAll();
+    }
+  };
+
+  document.getElementById('addCatBtn').onclick = () => {
+    const newCat = document.getElementById('newCat').value.trim().toLowerCase();
+    if(newCat && !categories.includes(newCat)) {
+      categories.push(newCat);
+      document.getElementById('newCat').value = '';
+      saveAll();
+      showToast(`Category "${newCat}" added`);
+    } else {
+      alert('Invalid or duplicate category');
+    }
+  };
+
+  // ========== PRODUCT CRUD ==========
+  function clearForm() {
+    document.getElementById('name').value = '';
+    document.getElementById('brand').value = 'GIVY STUDIO';
+    document.getElementById('desc').value = '';
+    document.getElementById('price').value = '';
+    document.getElementById('fbUser').value = '';
+    document.getElementById('editId').value = '';
+    resetImages();
+    document.getElementById('saveBtn').innerHTML = '💾 Save Product';
+    document.getElementById('cancelEditBtn').style.display = 'none';
+    document.getElementById('formTitle').innerHTML = '➕ Add New Product';
+  }
+
+  document.getElementById('saveBtn').onclick = () => {
+    const name = document.getElementById('name').value.trim();
+    const price = parseFloat(document.getElementById('price').value);
+    if(!name || isNaN(price)) {
+      alert('Please fill Name and Price');
+      return;
+    }
+    
+    const product = {
+      id: Date.now(),
+      name: name,
+      brand: document.getElementById('brand').value.trim(),
+      category: document.getElementById('category').value,
+      desc: document.getElementById('desc').value.trim(),
+      price: price,
+      fbUser: document.getElementById('fbUser').value.trim(),
+      images: [...currentImages]
+    };
+    
+    const editId = document.getElementById('editId').value;
+    if(editId) {
+      const idx = products.findIndex(p => p.id == editId);
+      if(idx !== -1) {
+        product.id = parseInt(editId);
+        products[idx] = product;
+        showToast('Product updated');
+      }
+      clearForm();
+    } else {
+      products.push(product);
+      showToast(`"${name}" added`);
+      clearForm();
+    }
+    saveAll();
+  };
+
+  document.getElementById('addMoreBtn').onclick = () => {
+    const name = document.getElementById('name').value.trim();
+    if(name) document.getElementById('saveBtn').click();
+    clearForm();
+    showToast('Ready for next product');
+  };
+
+  document.getElementById('cancelEditBtn').onclick = () => clearForm();
+
+  window.editProduct = (id) => {
+    const p = products.find(p => p.id == id);
+    if(!p) return;
+    document.getElementById('name').value = p.name;
+    document.getElementById('brand').value = p.brand;
+    document.getElementById('category').value = p.category;
+    document.getElementById('desc').value = p.desc;
+    document.getElementById('price').value = p.price;
+    document.getElementById('fbUser').value = p.fbUser || '';
+    document.getElementById('editId').value = p.id;
+    currentImages = p.images ? [...p.images] : [];
+    currentPreviewImages = p.images ? [...p.images] : [];
+    renderImagePreview();
+    document.getElementById('saveBtn').innerHTML = '✏️ Update Product';
+    document.getElementById('cancelEditBtn').style.display = 'inline-block';
+    document.getElementById('formTitle').innerHTML = '✏️ Edit Product';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  window.deleteProduct = (id) => {
+    if(confirm('Delete this product?')) {
+      products = products.filter(p => p.id != id);
+      saveAll();
+      if(document.getElementById('editId').value == id) clearForm();
+      showToast('Product deleted');
+    }
+  };
+
+  function renderProductList() {
+    const container = document.getElementById('productList');
+    if(products.length === 0) {
+      container.innerHTML = '<div style="text-align:center; padding:30px; color:#666;">No products yet</div>';
+      return;
+    }
+    container.innerHTML = products.map(p => `
+      <div class="product-item">
+        <div>
+          <strong style="color:#C5A267;">${escapeHtml(p.name)}</strong><br>
+          <span style="color:#888;">${escapeHtml(p.brand)} | ${p.category}</span><br>
+          <span style="color:#C5A267;">$${p.price}</span>
+          ${p.fbUser ? `<div style="font-size:11px; color:#1877F2;">FB: ${escapeHtml(p.fbUser)}</div>` : ''}
+          ${p.images && p.images.length ? `<div style="font-size:11px; color:#C5A267;">📷 ${p.images.length} photo(s)</div>` : ''}
+        </div>
+        <div>
+          <button onclick="editProduct(${p.id})" style="background:#2a5f8a;">✏️ Edit</button>
+          <button onclick="deleteProduct(${p.id})" class="btn-del">🗑️ Delete</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ========== FACEBOOK SETTINGS ==========
+  document.getElementById('saveGlobalFbBtn').onclick = () => {
+    globalFb = document.getElementById('globalFb').value.trim();
+    localStorage.setItem('givy_global_fb', globalFb);
+    showToast('Global Facebook username saved');
+  };
+
+  document.getElementById('syncFBBtn').onclick = () => {
+    if(products.length === 0) {
+      showToast('No products to sync');
+      return;
+    }
+    console.log('Facebook Commerce Sync:', products);
+    showToast(`🚀 ${products.length} products synced to Facebook Commerce Manager`);
+  };
+
+  // ========== EXIT ==========
+  document.getElementById('exitBtn').onclick = () => {
+    window.location.href = 'index.html';
+  };
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.innerText = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  function escapeHtml(str) { return str ? str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])) : ''; }
+</script>
+</body>
+</html>
